@@ -22,6 +22,9 @@ def signup():
         username = request.form['username'].strip()
         password = request.form['password']
         avatar_colour = request.form.get('avatar_colour', '#7c3aed')
+        if len(password) < 6:
+            flash('Password must be at least 6 characters.', 'error')
+            return render_template('landing.html', mode='signup')
         if User.query.filter_by(username=username).first():
             flash('Username already taken.', 'error')
             return render_template('landing.html', mode='signup')
