@@ -23,7 +23,6 @@ def get_or_create_daily_set():
             selected_ids.append(real_q.id)
 
     random.shuffle(selected_ids)
-    selected_ids = selected_ids[:10]
 
     daily_set = DailySet(date=today, question_ids=json.dumps(selected_ids))
     db.session.add(daily_set)
