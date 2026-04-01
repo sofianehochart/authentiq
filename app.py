@@ -52,8 +52,8 @@ def _seed_questions_if_empty():
                     for q in json.load(f):
                         db.session.add(Question(**q))
                 db.session.commit()
-    except Exception:
-        pass  # Models not yet defined — Task 2 adds them
+    except ImportError:
+        pass  # models.py not yet populated — Task 2 adds the models
 
 
 if __name__ == '__main__':
