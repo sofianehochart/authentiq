@@ -9,8 +9,8 @@ def test_signup_creates_user(client, app):
 
 
 def test_duplicate_username_rejected(client):
-    client.post('/signup', data={'username': 'bob', 'password': 'p', 'avatar_colour': '#7c3aed'})
-    r = client.post('/signup', data={'username': 'bob', 'password': 'p2', 'avatar_colour': '#0ea5e9'},
+    client.post('/signup', data={'username': 'bob', 'password': 'pass123', 'avatar_colour': '#7c3aed'})
+    r = client.post('/signup', data={'username': 'bob', 'password': 'pass456', 'avatar_colour': '#0ea5e9'},
                     follow_redirects=True)
     assert b'taken' in r.data.lower()
 
