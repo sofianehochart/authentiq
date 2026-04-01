@@ -15,6 +15,11 @@ def test_correct_at_15s_base_only():
     assert calculate_points(True, 15000) == 1000
 
 
+def test_correct_just_over_3s_interpolated():
+    # At 3001ms: first ms into the interpolation zone
+    assert calculate_points(True, 3001) == 1500  # round(500 * 11999/12000) rounds to 500
+
+
 def test_correct_midpoint_partial_bonus():
     # At 9000ms: speed_bonus = round(500 * (15000-9000) / 12000) = round(250.0) = 250
     assert calculate_points(True, 9000) == 1250
