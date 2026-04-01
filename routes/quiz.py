@@ -74,9 +74,24 @@ def answer():
     if not attempt or attempt.user_id != current_user.id:
         abort(403)
 
+    if attempt.completed_at is not None:
+        return redirect(url_for('quiz.results', attempt_id=attempt.id))
+
+    daily_set = attempt.daily_set
+    if question_id not in daily_set.get_question_ids():
+        abort(400)
+
+    if QuizAnswer.query.filter_by(attempt_id=attempt.id, question_id=question_id).first():
+        return redirect(url_for('quiz.quiz'))
+
     question = db.session.get(Question, question_id)
     if not question:
         abort(404)
+
+    if answer_val not in ('ai', 'real', 'timeout'):
+        abort(400)
+
+    response_time_ms = max(0, min(15000, response_time_ms))
 
     if answer_val == 'timeout':
         user_answer = None
@@ -98,8 +113,8 @@ def answer():
     db.session.add(quiz_answer)
     attempt.score += points
 
-    daily_set = attempt.daily_set
-    if len(attempt.answers) + 1 >= len(daily_set.get_question_ids()):
+    answered_count = QuizAnswer.query.filter_by(attempt_id=attempt.id).count() + 1
+    if answered_count >= len(daily_set.get_question_ids()):
         attempt.completed_at = datetime.utcnow()
 
     db.session.commit()
