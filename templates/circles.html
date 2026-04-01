@@ -1,22 +1,44 @@
-<!doctype html>
-<html>
-<head><title>Circles</title></head>
-<body>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, msg in messages %}<p>{{ msg }}</p>{% endfor %}
-  {% endwith %}
+{% extends "base.html" %}
+{% block title %}Circle — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;max-width:520px;">
+  <h2 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin:0 0 24px;">Your Circle</h2>
+
   {% if circle %}
-    <p>Your Circle: {{ circle.name }} — Code: {{ circle.invite_code }}</p>
-    <form method="POST" action="/circles/leave"><button>Leave</button></form>
+  <div class="card" style="margin-bottom:24px;">
+    <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--violet-light);margin:0 0 8px;">{{ circle.name }}</p>
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;">
+      <p class="text-muted text-sm" style="margin:0 0 4px;">Invite code</p>
+      <p style="font-size:28px;font-weight:800;letter-spacing:0.15em;color:var(--cyan);margin:0;">{{ circle.invite_code }}</p>
+    </div>
+    <p class="text-muted text-sm" style="margin:0 0 16px;">Share this code with friends so they can join.</p>
+    <form method="POST" action="/circles/leave">
+      <button class="btn btn-secondary" type="submit">Leave Circle</button>
+    </form>
+  </div>
   {% else %}
-    <form method="POST" action="/circles/create">
-      <input name="name" placeholder="Circle name">
-      <button>Create</button>
-    </form>
-    <form method="POST" action="/circles/join">
-      <input name="invite_code" placeholder="Invite code">
-      <button>Join</button>
-    </form>
+  <div style="display:grid;gap:16px;">
+    <div class="card">
+      <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);margin:0 0 16px;">Create a Circle</p>
+      <form method="POST" action="/circles/create">
+        <div class="form-group">
+          <label class="form-label">Circle name</label>
+          <input class="form-input" name="name" placeholder="e.g. Yale Squad" required maxlength="100">
+        </div>
+        <button class="btn btn-primary" type="submit">Create →</button>
+      </form>
+    </div>
+    <div class="card">
+      <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--violet-light);margin:0 0 16px;">Join a Circle</p>
+      <form method="POST" action="/circles/join">
+        <div class="form-group">
+          <label class="form-label">Invite code</label>
+          <input class="form-input" name="invite_code" placeholder="e.g. ABC123" required maxlength="6" style="text-transform:uppercase;letter-spacing:0.15em;font-size:18px;font-weight:700;">
+        </div>
+        <button class="btn btn-primary" type="submit">Join →</button>
+      </form>
+    </div>
+  </div>
   {% endif %}
-</body>
-</html>
+</main>
+{% endblock %}

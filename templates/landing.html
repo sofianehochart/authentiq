@@ -1,23 +1,98 @@
-<!doctype html>
-<html>
-<head><title>AuthentIQ</title></head>
-<body>
-  <h1>AuthentIQ</h1>
+{% extends "base.html" %}
+{% block title %}AuthentIQ — Think you can tell what's real?{% endblock %}
+{% block content %}
+<header class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+      <button id="themeToggle" class="btn btn-secondary" style="font-size:13px;padding:6px 14px;">☀ Light</button>
+    </div>
+    <h1 class="hero-title"><span class="gradient-text">AuthentIQ</span></h1>
+    <p class="hero-tagline">Think you can tell what's real? Prove it.</p>
+  </div>
+</header>
+
+<main class="container" style="padding:40px 0 60px;max-width:480px;">
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% for category, msg in messages %}
-      <p class="flash-{{ category }}">{{ msg }}</p>
+      <div class="flash flash-{{ category }}">{{ msg }}</div>
     {% endfor %}
   {% endwith %}
-  <form method="POST" action="/signup">
-    <input name="username" placeholder="Username" required>
-    <input name="password" type="password" placeholder="Password" required>
-    <input name="avatar_colour" type="hidden" value="#7c3aed">
-    <button type="submit">Sign up</button>
-  </form>
-  <form method="POST" action="/login">
-    <input name="username" placeholder="Username" required>
-    <input name="password" type="password" placeholder="Password" required>
-    <button type="submit">Log in</button>
-  </form>
-</body>
-</html>
+
+  <div class="card">
+    <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--border);">
+      <button class="tab-btn {% if mode != 'login' %}tab-active{% endif %}" data-tab="signup" style="flex:1;padding:12px;background:none;border:none;cursor:pointer;font:inherit;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;">Sign up</button>
+      <button class="tab-btn {% if mode == 'login' %}tab-active{% endif %}" data-tab="login" style="flex:1;padding:12px;background:none;border:none;cursor:pointer;font:inherit;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;">Log in</button>
+    </div>
+
+    <div id="pane-signup" {% if mode == 'login' %}style="display:none"{% endif %}>
+      <form method="POST" action="/signup">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" name="username" placeholder="Choose a username" required maxlength="50">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" name="password" type="password" placeholder="Create a password" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Avatar colour</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;" id="colour-picker">
+            {% for colour in ['#7c3aed','#0ea5e9','#10b981','#f59e0b','#ef4444','#ec4899'] %}
+              <label style="cursor:pointer;">
+                <input type="radio" name="avatar_colour" value="{{ colour }}" {% if colour == '#7c3aed' %}checked{% endif %} style="display:none;">
+                <span class="avatar" style="background:{{ colour }};outline-offset:2px;" data-colour="{{ colour }}">A</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg mt-4" type="submit">Create account →</button>
+      </form>
+    </div>
+
+    <div id="pane-login" {% if mode != 'login' %}style="display:none"{% endif %}>
+      <form method="POST" action="/login">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" name="username" placeholder="Your username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" name="password" type="password" placeholder="Your password" required>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg mt-4" type="submit">Log in →</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+      b.style.borderBottomColor = 'transparent';
+      b.style.color = 'var(--muted)';
+    });
+    btn.style.borderBottomColor = 'var(--violet)';
+    btn.style.color = 'var(--text)';
+    document.getElementById('pane-signup').style.display = btn.dataset.tab === 'signup' ? '' : 'none';
+    document.getElementById('pane-login').style.display = btn.dataset.tab === 'login' ? '' : 'none';
+  });
+});
+// Highlight active tab on load
+document.querySelectorAll('.tab-active').forEach(function(btn) {
+  btn.style.borderBottomColor = 'var(--violet)';
+  btn.style.color = 'var(--text)';
+});
+// Avatar colour picker
+document.querySelectorAll('#colour-picker input[type=radio]').forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    document.querySelectorAll('#colour-picker .avatar').forEach(function(dot) {
+      dot.style.outline = '';
+    });
+    radio.parentElement.querySelector('.avatar').style.outline = '3px solid white';
+  });
+  if (radio.checked) radio.parentElement.querySelector('.avatar').style.outline = '3px solid white';
+});
+</script>
+{% endblock %}

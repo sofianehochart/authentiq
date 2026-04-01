@@ -1,18 +1,51 @@
-<!doctype html>
-<html>
-<head><title>Quiz</title></head>
-<body>
-  <p>Question {{ question_number }} of {{ total }}</p>
-  <p>{{ question.content }}</p>
-  <p>{{ question.author_label }}</p>
-  <form id="answer-form" method="POST" action="/quiz/answer">
-    <input type="hidden" name="attempt_id" value="{{ attempt_id }}">
-    <input type="hidden" name="question_id" value="{{ question.id }}">
-    <input type="hidden" name="answer" id="answer-input">
-    <input type="hidden" name="response_time_ms" id="response-time-input">
-    <button type="button" class="answer-btn" data-answer="real">REAL</button>
-    <button type="button" class="answer-btn" data-answer="ai">AI</button>
-  </form>
-  <script src="/static/js/quiz.js"></script>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Question {{ question_number }} — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;">
+  <div class="quiz-card">
+
+    <!-- Progress -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <span class="text-muted text-sm">Question {{ question_number }} of {{ total }}</span>
+      <span class="text-sm font-bold" id="timer-label">15s</span>
+    </div>
+    <div class="timer-bar-wrap">
+      <div class="timer-bar" id="timer-bar"></div>
+    </div>
+
+    <!-- Post card -->
+    <div class="card" style="margin-bottom:24px;">
+      <span class="question-format-badge badge-{{ question.format }}">
+        {% if question.format == 'tweet' %}🐦 Tweet
+        {% elif question.format == 'linkedin' %}💼 LinkedIn
+        {% elif question.format == 'reddit' %}👾 Reddit
+        {% elif question.format == 'news_quote' %}📰 Quote
+        {% endif %}
+      </span>
+      <p class="post-content">{{ question.content }}</p>
+      <p class="post-author">{{ question.author_label }}</p>
+
+      <!-- Answer buttons -->
+      <form id="answer-form" method="POST" action="/quiz/answer">
+        <input type="hidden" name="attempt_id" value="{{ attempt_id }}">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <input type="hidden" name="answer" id="answer-input">
+        <input type="hidden" name="response_time_ms" id="response-time-input">
+        <div class="answer-buttons">
+          <button type="button" class="btn btn-real answer-btn" data-answer="real">✅ REAL</button>
+          <button type="button" class="btn btn-ai answer-btn" data-answer="ai">🤖 AI</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Progress dots -->
+    <div style="display:flex;gap:6px;justify-content:center;">
+      {% for i in range(total) %}
+        <div style="width:8px;height:8px;border-radius:50%;background:{% if i < question_number - 1 %}var(--violet){% elif i == question_number - 1 %}var(--cyan){% else %}var(--surface2){% endif %};"></div>
+      {% endfor %}
+    </div>
+
+  </div>
+</main>
+<script src="/static/js/quiz.js"></script>
+{% endblock %}

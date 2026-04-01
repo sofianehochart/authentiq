@@ -1,11 +1,50 @@
-<!doctype html>
-<html>
-<head><title>Results</title></head>
-<body>
-  <h1>Score: {{ attempt.score }}</h1>
-  {% for ans in attempt.answers %}
-    <p>Q{{ loop.index }}: {{ 'Correct' if ans.correct else 'Wrong' }} — {{ ans.points_earned }} pts</p>
-  {% endfor %}
-  <a href="/home">Home</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Results — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;max-width:640px;">
+
+  <div class="text-center" style="margin-bottom:40px;">
+    <p class="text-muted text-sm" style="margin:0 0 8px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;">Today's score</p>
+    <div class="score-big">{{ '{:,}'.format(attempt.score) }}</div>
+    <p class="text-muted" style="margin:8px 0 0;">out of 15,000 pts</p>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--violet-light);margin:0 0 16px;">Question breakdown</p>
+    {% for ans in attempt.answers %}
+    <div class="result-row">
+      <div>
+        <span class="{% if ans.correct %}result-correct{% else %}result-wrong{% endif %}" style="margin-right:8px;">
+          {% if ans.correct %}✓{% else %}✗{% endif %}
+        </span>
+        <span style="font-size:13px;color:var(--muted);">
+          {{ ans.question.theme }} ·
+          {% if ans.answer is none %}Timed out
+          {% elif ans.answer %}Guessed AI
+          {% else %}Guessed Real
+          {% endif %}
+          · Was <strong>{{ 'AI' if ans.question.is_ai else 'Real' }}</strong>
+        </span>
+      </div>
+      <span style="font-weight:700;color:{% if ans.correct %}var(--green){% else %}var(--muted){% endif %};">
+        +{{ ans.points_earned }}
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div style="display:flex;gap:12px;justify-content:center;">
+    <a class="btn btn-primary" href="/leaderboard">See leaderboard</a>
+    <a class="btn btn-secondary" href="/home">Home</a>
+  </div>
+
+  <div class="card text-center mt-6" style="background:var(--surface2);">
+    <p class="text-muted text-sm" style="margin:0 0 8px;">Share your score</p>
+    <p style="font-family:monospace;font-size:14px;color:var(--heading);">
+      AuthentIQ {{ attempt.completed_at.strftime('%d %b') }} · {{ '{:,}'.format(attempt.score) }}/15,000 pts<br>
+      {{ attempt.answers|selectattr('correct')|list|length }}/{{ attempt.answers|length }} correct · Think you can beat me?
+    </p>
+  </div>
+
+</main>
+{% endblock %}

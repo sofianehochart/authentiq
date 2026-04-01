@@ -1,7 +1,57 @@
-<!doctype html>
-<html>
-<head><title>Home</title></head>
-<body>
-  <p>home — logged in as {{ current_user.username }}</p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Home — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;">
+  <div style="margin-bottom:32px;">
+    <h2 style="margin:0 0 4px;font-size:26px;font-weight:800;letter-spacing:-0.02em;">
+      Hey, <span style="color:var(--violet-light);">{{ current_user.username }}</span> 👋
+    </h2>
+    <p class="text-muted text-sm">Ready for today's quiz?</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;">
+    <!-- TODAY CARD -->
+    <div class="card">
+      <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);margin:0 0 8px;">Today's Quiz</p>
+      {% if today_attempt %}
+        <h3 style="margin:0 0 8px;font-size:20px;font-weight:800;">You scored <span style="color:var(--cyan);">{{ '{:,}'.format(today_attempt.score) }}</span> pts</h3>
+        <p class="text-muted text-sm" style="margin:0 0 20px;">
+          {{ today_attempt.answers|selectattr('correct')|list|length }}/{{ today_attempt.answers|length }} correct
+        </p>
+        <div style="display:flex;gap:12px;">
+          <a class="btn btn-secondary" href="/quiz/results/{{ today_attempt.id }}">View breakdown</a>
+          <a class="btn btn-secondary" href="/leaderboard">Leaderboard</a>
+        </div>
+      {% else %}
+        <h3 style="margin:0 0 8px;font-size:20px;font-weight:800;">10 questions · Mixed themes</h3>
+        <p class="text-muted text-sm" style="margin:0 0 20px;">Accuracy + speed. You have until midnight.</p>
+        <a class="btn btn-primary btn-lg" href="/quiz">Play now →</a>
+      {% endif %}
+    </div>
+
+    <!-- CIRCLE WIDGET -->
+    <div class="card">
+      <p style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--violet-light);margin:0 0 12px;">Your Circle</p>
+      {% if circle_rows is defined and circle_rows %}
+        {% if not today_attempt %}
+          <p class="text-muted text-sm">Complete today's quiz to see scores.</p>
+          <p style="margin:8px 0 0;font-size:13px;">{{ friends_played }} friend{{ 's' if friends_played != 1 }} played so far.</p>
+        {% else %}
+          {% for row in circle_rows %}
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+              <div class="flex items-center gap-3">
+                <span class="avatar" style="background:{{ row.avatar_colour }};">{{ row.username[0].upper() }}</span>
+                <span style="font-weight:600;">{{ row.username }}</span>
+              </div>
+              <span style="font-weight:700;color:var(--cyan);">{{ '{:,}'.format(row.weekly or 0) }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% else %}
+        <p class="text-muted text-sm">No Circle yet.</p>
+        <a class="btn btn-secondary mt-4" href="/circles" style="display:inline-block;">Create or join →</a>
+      {% endif %}
+    </div>
+  </div>
+</main>
+{% endblock %}
