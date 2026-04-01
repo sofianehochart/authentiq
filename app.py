@@ -16,10 +16,11 @@ def create_app(test_config=None):
     db.init_app(app)
     login_manager.init_app(app)
 
-    from models import User  # Import models so they're registered with db
+    import models  # Import module so all models register with db before create_all()
 
     @login_manager.user_loader
     def load_user(user_id):
+        from models import User
         return db.session.get(User, int(user_id))
 
     from routes.auth import auth_bp
@@ -53,7 +54,7 @@ def _seed_questions_if_empty():
                     for q in json.load(f):
                         db.session.add(Question(**q))
                 db.session.commit()
-    except (ImportError, Exception):
+    except ImportError:
         pass  # models.py not yet populated — Task 2 adds the models
 
 
