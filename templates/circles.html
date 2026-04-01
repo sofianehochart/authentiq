@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head><title>Circles</title></head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}<p>{{ msg }}</p>{% endfor %}
+  {% endwith %}
+  {% if circle %}
+    <p>Your Circle: {{ circle.name }} — Code: {{ circle.invite_code }}</p>
+    <form method="POST" action="/circles/leave"><button>Leave</button></form>
+  {% else %}
+    <form method="POST" action="/circles/create">
+      <input name="name" placeholder="Circle name">
+      <button>Create</button>
+    </form>
+    <form method="POST" action="/circles/join">
+      <input name="invite_code" placeholder="Invite code">
+      <button>Join</button>
+    </form>
+  {% endif %}
+</body>
+</html>
