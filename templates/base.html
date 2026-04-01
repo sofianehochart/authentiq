@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}AuthentIQ{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="/static/js/theme.js"></script>
+</head>
+<body>
+  {% if current_user.is_authenticated %}
+  <nav>
+    <a class="nav-logo" href="/home">AuthentIQ</a>
+    <div class="nav-links">
+      <a class="nav-link" href="/quiz">Play</a>
+      <a class="nav-link" href="/leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/circles">Circle</a>
+      <a class="nav-link" href="/profile">Profile</a>
+      <button id="themeToggle" class="btn btn-secondary" style="padding:6px 12px;font-size:13px;">☀ Light</button>
+      <a class="nav-link" href="/logout">Log out</a>
+    </div>
+  </nav>
+  {% endif %}
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-4">
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>
