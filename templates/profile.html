@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+<head><title>Profile</title></head>
+<body>
+  <h1>{{ current_user.username }}</h1>
+  <p>Streak: {{ streak }} days</p>
+  <p>Lifetime accuracy: {{ lifetime_accuracy }}%</p>
+  {% for theme, stats in theme_stats.items() %}
+    <p>{{ theme }}: {{ stats.accuracy }}%</p>
+  {% endfor %}
+</body>
+</html>

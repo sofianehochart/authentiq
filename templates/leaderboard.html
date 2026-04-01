@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head><title>Leaderboard</title></head>
+<body>
+  {% if circle %}<h2>{{ circle.name }}</h2>{% endif %}
+  {% for row in circle_rows %}
+    <p>{{ row.username }} — {{ row.weekly }} pts</p>
+  {% endfor %}
+  <h2>Global Top 20</h2>
+  {% for row in global_rows %}
+    <p>{{ row.username }} — {{ row.weekly }} pts</p>
+  {% endfor %}
+</body>
+</html>
