@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head><title>Quiz</title></head>
+<body>
+  <p>Question {{ question_number }} of {{ total }}</p>
+  <p>{{ question.content }}</p>
+  <p>{{ question.author_label }}</p>
+  <form id="answer-form" method="POST" action="/quiz/answer">
+    <input type="hidden" name="attempt_id" value="{{ attempt_id }}">
+    <input type="hidden" name="question_id" value="{{ question.id }}">
+    <input type="hidden" name="answer" id="answer-input">
+    <input type="hidden" name="response_time_ms" id="response-time-input">
+    <button type="button" class="answer-btn" data-answer="real">REAL</button>
+    <button type="button" class="answer-btn" data-answer="ai">AI</button>
+  </form>
+  <script src="/static/js/quiz.js"></script>
+</body>
+</html>

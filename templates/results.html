@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+<head><title>Results</title></head>
+<body>
+  <h1>Score: {{ attempt.score }}</h1>
+  {% for ans in attempt.answers %}
+    <p>Q{{ loop.index }}: {{ 'Correct' if ans.correct else 'Wrong' }} — {{ ans.points_earned }} pts</p>
+  {% endfor %}
+  <a href="/home">Home</a>
+</body>
+</html>
