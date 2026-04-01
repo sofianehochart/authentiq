@@ -50,7 +50,7 @@ def _seed_questions_if_empty():
             from pathlib import Path
             path = Path(__file__).parent / 'data' / 'questions.json'
             if path.exists():
-                with open(path) as f:
+                with open(path, encoding='utf-8') as f:
                     for q in json.load(f):
                         db.session.add(Question(**q))
                 db.session.commit()
