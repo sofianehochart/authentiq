@@ -18,7 +18,7 @@ def test_daily_set_balanced_ai_real(app, sample_questions):
     ds = get_or_create_daily_set()
     ids = ds.get_question_ids()
     qs = Question.query.filter(Question.id.in_(ids)).all()
-    ai_count = sum(1 for q in qs if q.is_ai)
-    real_count = sum(1 for q in qs if not q.is_ai)
+    ai_count = sum(1 for q in qs if not q.is_real)
+    real_count = sum(1 for q in qs if q.is_real)
     assert ai_count == 5
     assert real_count == 5

@@ -2,6 +2,23 @@
 {% block title %}Home — AuthentIQ{% endblock %}
 {% block content %}
 <main class="container" style="padding:40px 0 60px;">
+  {% if show_premium_upsell %}
+  <div id="premium-upsell-banner" class="premium-upsell-banner" role="region" aria-label="Premium upsell">
+    <div style="min-width:0;">
+      <p style="font-weight:800;margin:0 0 4px;font-size:14px;">Unlock drills, tournaments, and deeper stats</p>
+      <p class="text-muted text-sm" style="margin:0;line-height:1.55;">Premium adds category drilling, category leaderboards, richer analytics, challenges, weekly tournaments, and audio rounds.</p>
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:10px;">
+        <a class="btn btn-primary" href="{{ url_for('premium.premium_page') }}">See Premium</a>
+        <a class="btn btn-secondary" href="{{ url_for('premium.premium_page') }}">Compare plans</a>
+      </div>
+    </div>
+    <div class="premium-upsell-actions">
+      <button type="button" class="btn btn-secondary" data-dismiss-premium-upsell style="padding:8px 12px;font-size:13px;">Dismiss</button>
+    </div>
+  </div>
+  <script src="/static/js/premium-upsell.js"></script>
+  {% endif %}
+
   <div style="margin-bottom:32px;">
     <h2 style="margin:0 0 4px;font-size:26px;font-weight:800;letter-spacing:-0.02em;">
       Hey, <span style="color:var(--violet-light);">{{ current_user.username }}</span> 👋

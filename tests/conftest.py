@@ -31,10 +31,17 @@ def sample_questions(app):
     qs = []
     for theme in themes:
         for is_ai in [True, False]:
+            cat = theme.lower()
             q = Question(
-                theme=theme, format='tweet',
+                category=cat,
+                format='tweet',
+                persona='Sample',
+                handle='@sample',
                 content=f'{theme} {"AI" if is_ai else "real"} sample post',
-                author_label='@sample', is_ai=is_ai, difficulty=1
+                is_real=not is_ai,
+                source_date='',
+                explanation='',
+                is_approved=True,
             )
             _db.session.add(q)
             qs.append(q)

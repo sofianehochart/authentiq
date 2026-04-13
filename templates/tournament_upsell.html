@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Premium tournaments — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;max-width:560px;">
+  <div class="card text-center" style="padding:32px 28px;">
+    <p style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--violet-light);margin:0 0 12px;">Premium</p>
+    <h2 style="margin:0 0 10px;font-size:24px;font-weight:900;letter-spacing:-0.02em;">Play the weekly tournament</h2>
+    <p class="text-muted text-sm" style="margin:0 0 20px;line-height:1.6;">
+      This week’s theme is <strong>{{ category_label }}</strong>. Free accounts can watch the leaderboard; Premium unlocks your one official run per week (10 questions) and full leaderboard stats.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+      <a class="btn btn-secondary" href="{{ url_for('tournament.hub') }}">Back to tournaments</a>
+      <a class="btn btn-primary" href="{{ url_for('premium.premium_page', next=request.path) }}">Go Premium</a>
+    </div>
+  </div>
+</main>
+{% endblock %}

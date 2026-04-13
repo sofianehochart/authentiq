@@ -20,7 +20,7 @@
               <td>
                 <div class="flex items-center gap-3">
                   <span class="avatar" style="background:{{ row.avatar_colour }};width:28px;height:28px;font-size:12px;">{{ row.username[0].upper() }}</span>
-                  {{ row.username }}
+                  <span class="lb-name">{{ row.username }}{% if row.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span>
                 </div>
               </td>
               <td class="lb-score">{{ '{:,}'.format(row.weekly or 0) }}</td>
@@ -43,7 +43,7 @@
             {% for row in global_rows %}
             <tr {% if row.username == current_user.username %}class="lb-you"{% endif %}>
               <td class="lb-rank">{{ loop.index }}</td>
-              <td>{{ row.username }}</td>
+              <td><span class="lb-name">{{ row.username }}{% if row.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span></td>
               <td class="lb-score">{{ '{:,}'.format(row.weekly or 0) }}</td>
             </tr>
             {% else %}

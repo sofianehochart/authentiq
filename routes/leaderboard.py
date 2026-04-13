@@ -21,7 +21,12 @@ def leaderboard():
     from extensions import db
     from sqlalchemy import func
     global_rows = (
-        db.session.query(User.username, User.avatar_colour, func.sum(QuizAttempt.score).label('weekly'))
+        db.session.query(
+            User.username,
+            User.avatar_colour,
+            User.is_premium,
+            func.sum(QuizAttempt.score).label('weekly'),
+        )
         .join(QuizAttempt, QuizAttempt.user_id == User.id)
         .filter(QuizAttempt.completed_at.isnot(None))
         .filter(func.date(QuizAttempt.completed_at) >= monday)
@@ -40,7 +45,12 @@ def leaderboard():
         circle = db.session.get(Circle, membership.circle_id)
         member_ids = [m.user_id for m in CircleMember.query.filter_by(circle_id=circle.id).all()]
         circle_rows = (
-            db.session.query(User.username, User.avatar_colour, func.sum(QuizAttempt.score).label('weekly'))
+            db.session.query(
+                User.username,
+                User.avatar_colour,
+                User.is_premium,
+                func.sum(QuizAttempt.score).label('weekly'),
+            )
             .join(QuizAttempt, QuizAttempt.user_id == User.id)
             .filter(User.id.in_(member_ids))
             .filter(QuizAttempt.completed_at.isnot(None))

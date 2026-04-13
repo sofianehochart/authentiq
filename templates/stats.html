@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}Stats — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;">
+  <div style="margin-bottom:28px;">
+    <h2 style="margin:0 0 6px;font-size:28px;font-weight:900;letter-spacing:-0.03em;">Your stats</h2>
+    <p class="text-muted text-sm" style="margin:0;">These numbers come from your QuestionResult rows joined to Question.</p>
+  </div>
+
+  <!-- Overall -->
+  <div class="stats-row">
+    <div class="card stats-metric">
+      <div class="stats-metric-value">{{ total_n }}</div>
+      <div class="stats-metric-label">Questions answered</div>
+    </div>
+    <div class="card stats-metric">
+      <div class="stats-metric-value">{{ overall_acc }}%</div>
+      <div class="stats-metric-label">Overall accuracy</div>
+    </div>
+    <div class="card stats-metric">
+      <div class="stats-metric-value">{{ current_streak }}</div>
+      <div class="stats-metric-label">Current streak <span class="text-muted text-sm">(days)</span></div>
+    </div>
+    <div class="card stats-metric">
+      <div class="stats-metric-value">{{ longest_streak }}</div>
+      <div class="stats-metric-label">Longest streak <span class="text-muted text-sm">(days)</span></div>
+    </div>
+    <div class="card stats-metric">
+      <div class="stats-metric-value">
+        {% if avg_response_ms is not none %}
+          {{ avg_response_ms }}<span class="text-muted text-sm" style="font-weight:700;"> ms</span>
+        {% else %}
+          —
+        {% endif %}
+      </div>
+      <div class="stats-metric-label">Avg response time</div>
+    </div>
+  </div>
+
+  {% set gated = not is_premium %}
+
+  <!-- By format -->
+  <div class="stats-section">
+    <div class="stats-section-head">
+      <h3 class="stats-h3">Accuracy by format</h3>
+      <p class="text-muted text-sm" style="margin:0;">Tweet · Instagram · Audio</p>
+    </div>
+    <div class="stats-gated-wrap">
+      <div class="stats-gated {% if gated %}is-locked{% endif %}">
+        <div class="stats-cards-3">
+          {% set fmt_tweet = by_format['tweet'] %}
+          <div class="card stats-detail-card">
+            <div class="stats-detail-top">
+              <div class="stats-detail-title">Tweet</div>
+              <div class="stats-detail-acc">{{ fmt_tweet.acc }}%</div>
+            </div>
+            <div class="text-muted text-sm" style="margin:0 0 10px;">{{ fmt_tweet.n }} answered</div>
+            <div class="acc-bar"><div class="acc-bar-fill" style="width:{{ fmt_tweet.acc }}%;"></div></div>
+          </div>
+
+          {% set fmt_ig = by_format['instagram'] %}
+          <div class="card stats-detail-card">
+            <div class="stats-detail-top">
+              <div class="stats-detail-title">Instagram</div>
+              <div class="stats-detail-acc">{{ fmt_ig.acc }}%</div>
+            </div>
+            <div class="text-muted text-sm" style="margin:0 0 10px;">{{ fmt_ig.n }} answered</div>
+            <div class="acc-bar"><div class="acc-bar-fill" style="width:{{ fmt_ig.acc }}%;"></div></div>
+          </div>
+
+          {% set fmt_audio = by_format['audio'] %}
+          <div class="card stats-detail-card">
+            <div class="stats-detail-top">
+              <div class="stats-detail-title">Audio</div>
+              <div class="stats-detail-acc">{{ fmt_audio.acc }}%</div>
+            </div>
+            <div class="text-muted text-sm" style="margin:0 0 10px;">{{ fmt_audio.n }} answered</div>
+            <div class="acc-bar"><div class="acc-bar-fill" style="width:{{ fmt_audio.acc }}%;"></div></div>
+          </div>
+        </div>
+      </div>
+      {% if gated %}
+      <div class="premium-overlay" role="note">
+        <div class="premium-card">
+          <div class="premium-title">Go Premium to unlock detailed stats</div>
+          <p class="premium-sub text-muted text-sm">Format + category breakdowns are available for premium members.</p>
+          <a class="btn btn-primary" style="margin-top:12px;display:inline-flex;" href="{{ url_for('premium.premium_page', next=request.path) }}">Compare plans</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- By category -->
+  <div class="stats-section">
+    <div class="stats-section-head">
+      <h3 class="stats-h3">Accuracy by category</h3>
+      <p class="text-muted text-sm" style="margin:0;">Sports · Politics · Celebrity</p>
+    </div>
+    <div class="stats-gated-wrap">
+      <div class="stats-gated {% if gated %}is-locked{% endif %}">
+        <div class="stats-cards-3">
+          {% set cat_sports = by_category['sports'] %}
+          <div class="card stats-detail-card">
+            <div class="stats-detail-top">
+              <div class="stats-detail-title">Sports</div>
+              <div class="stats-detail-acc">{{ cat_sports.acc }}%</div>
+            </div>
+            <div class="text-muted text-sm" style="margin:0 0 10px;">{{ cat_sports.n }} answered</div>
+            <div class="acc-bar"><div class="acc-bar-fill" style="width:{{ cat_sports.acc }}%;"></div></div>
+          </div>
+
+          {% set cat_pol = by_category['politics'] %}
+          <div class="card stats-detail-card">
+            <div class="stats-detail-top">
+              <div class="stats-detail-title">Politics</div>
+              <div class="stats-detail-acc">{{ cat_pol.acc }}%</div>
+            </div>
+            <div class="text-muted text-sm" style="margin:0 0 10px;">{{ cat_pol.n }} answered</div>
+            <div class="acc-bar"><div class="acc-bar-fill" style="width:{{ cat_pol.acc }}%;"></div></div>
+          </div>
+
+          {% set cat_celeb = by_category['celebrity'] %}
+          <div class="card stats-detail-card">
+            <div class="stats-detail-top">
+              <div class="stats-detail-title">Celebrity</div>
+              <div class="stats-detail-acc">{{ cat_celeb.acc }}%</div>
+            </div>
+            <div class="text-muted text-sm" style="margin:0 0 10px;">{{ cat_celeb.n }} answered</div>
+            <div class="acc-bar"><div class="acc-bar-fill" style="width:{{ cat_celeb.acc }}%;"></div></div>
+          </div>
+        </div>
+      </div>
+      {% if gated %}
+      <div class="premium-overlay" role="note">
+        <div class="premium-card">
+          <div class="premium-title">Go Premium to unlock detailed stats</div>
+          <p class="premium-sub text-muted text-sm">See how you perform across Sports, Politics, and Celebrity.</p>
+          <a class="btn btn-primary" style="margin-top:12px;display:inline-flex;" href="{{ url_for('premium.premium_page', next=request.path) }}">Compare plans</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="stats-section">
+    <div class="stats-section-head">
+      <h3 class="stats-h3">Accuracy by category &amp; format</h3>
+      <p class="text-muted text-sm" style="margin:0;">Cells show accuracy when there are at least 3 answers; otherwise “-”.</p>
+    </div>
+    <div class="stats-gated-wrap">
+      <div class="stats-gated {% if gated %}is-locked{% endif %}">
+        <div class="card" style="padding:0;overflow:hidden;">
+          <table class="stats-grid-table">
+            <thead>
+              <tr>
+                <th class="stats-grid-corner"></th>
+                <th>Tweet</th>
+                <th>Instagram</th>
+                <th>Audio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in range(grid_rows_labels|length) %}
+              <tr>
+                <th class="stats-grid-rowlabel">{{ grid_rows_labels[i]|title }}</th>
+                {% for j in range(grid_cols_labels|length) %}
+                  {% set cell = grid_cells[i][j] %}
+                  <td>
+                    <div class="stats-grid-cell">
+                      <div class="stats-grid-pct">{{ cell.label }}</div>
+                      <div class="text-muted text-sm">n={{ cell.n }}</div>
+                      {% if cell.acc is not none %}
+                        <div class="acc-bar acc-bar-sm"><div class="acc-bar-fill" style="width:{{ cell.acc }}%;"></div></div>
+                      {% endif %}
+                    </div>
+                  </td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% if gated %}
+      <div class="premium-overlay" role="note">
+        <div class="premium-card">
+          <div class="premium-title">Go Premium to unlock detailed stats</div>
+          <p class="premium-sub text-muted text-sm">Unlock the full 3×3 performance grid.</p>
+          <a class="btn btn-primary" style="margin-top:12px;display:inline-flex;" href="{{ url_for('premium.premium_page', next=request.path) }}">Compare plans</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+{% endblock %}

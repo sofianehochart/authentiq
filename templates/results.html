@@ -18,12 +18,12 @@
           {% if ans.correct %}✓{% else %}✗{% endif %}
         </span>
         <span style="font-size:13px;color:var(--muted);">
-          {{ ans.question.theme }} ·
+          {{ ans.question.category }} ·
           {% if ans.answer is none %}Timed out
           {% elif ans.answer %}Guessed AI
           {% else %}Guessed Real
           {% endif %}
-          · Was <strong>{{ 'AI' if ans.question.is_ai else 'Real' }}</strong>
+          · Was <strong>{{ 'Real' if ans.question.is_real else 'AI' }}</strong>
         </span>
       </div>
       <span style="font-weight:700;color:{% if ans.correct %}var(--green){% else %}var(--muted){% endif %};">

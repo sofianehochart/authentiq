@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Challenge — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;">
+  <div style="margin-bottom:24px;">
+    <p class="text-muted text-sm" style="margin:0 0 6px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Challenge</p>
+    <h2 style="margin:0;font-size:26px;font-weight:900;letter-spacing:-0.02em;">{{ challenge.category|title }} · 10 questions</h2>
+  </div>
+
+  {% if show_results %}
+  <div class="challenge-results-head text-center" style="margin-bottom:20px;">
+    {% if winner_side == 'tie' %}
+ <p style="margin:0;font-size:18px;font-weight:900;">It's a tie</p>
+      <p class="text-muted text-sm" style="margin:6px 0 0;">Same score · same total time</p>
+    {% else %}
+      <p style="margin:0;font-size:18px;font-weight:900;">
+        {% if winner_side == 'challenger' %}
+          <span class="lb-name">{{ challenge.challenger.username }}{% if challenge.challenger.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span> wins <span aria-hidden="true">&#127942;</span>
+        {% else %}
+          <span class="lb-name">{{ challenge.opponent.username }}{% if challenge.opponent.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span> wins <span aria-hidden="true">&#127942;</span>
+        {% endif %}
+      </p>
+      <p class="text-muted text-sm" style="margin:6px 0 0;">Ties on points go to the faster total time.</p>
+    {% endif %}
+  </div>
+
+  <div class="challenge-results-split">
+    <div class="card challenge-result-card {% if winner_side == 'challenger' %}is-winner{% endif %}">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <span class="avatar" style="background:{{ challenge.challenger.avatar_colour }};">{{ challenge.challenger.username[0].upper() }}</span>
+        <div>
+          <div style="font-weight:900;"><span class="lb-name">{{ challenge.challenger.username }}{% if challenge.challenger.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span>{% if winner_side == 'challenger' %}<span style="margin-left:8px;" aria-hidden="true">&#127942;</span>{% endif %}</div>
+          <div class="text-muted text-sm">Challenger</div>
+        </div>
+      </div>
+      <div style="font-size:28px;font-weight:900;color:var(--cyan);">{{ '{:,}'.format(challenge.challenger_score or 0) }} <span class="text-muted text-sm" style="font-weight:700;">pts</span></div>
+      <div class="text-muted text-sm" style="margin-top:8px;">Accuracy: {{ acc_ch or 0 }}% · Time: {{ challenge.challenger_time_ms or 0 }} ms</div>
+    </div>
+
+    <div class="card challenge-result-card {% if winner_side == 'opponent' %}is-winner{% endif %}">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <span class="avatar" style="background:{{ challenge.opponent.avatar_colour }};">{{ challenge.opponent.username[0].upper() }}</span>
+        <div>
+          <div style="font-weight:900;"><span class="lb-name">{{ challenge.opponent.username }}{% if challenge.opponent.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span>{% if winner_side == 'opponent' %}<span style="margin-left:8px;" aria-hidden="true">&#127942;</span>{% endif %}</div>
+          <div class="text-muted text-sm">Opponent</div>
+        </div>
+      </div>
+      <div style="font-size:28px;font-weight:900;color:var(--cyan);">{{ '{:,}'.format(challenge.opponent_score or 0) }} <span class="text-muted text-sm" style="font-weight:700;">pts</span></div>
+      <div class="text-muted text-sm" style="margin-top:8px;">Accuracy: {{ acc_op or 0 }}% · Time: {{ challenge.opponent_time_ms or 0 }} ms</div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;gap:12px;margin-top:24px;">
+    <a class="btn btn-secondary" href="/challenges">History</a>
+    {% if current_user.is_premium %}
+    <a class="btn btn-primary" href="/challenge/create">New challenge</a>
+    {% endif %}
+  </div>
+
+  {% else %}
+
+ {% if role == 'challenger' and challenge.status == 'pending' and not challenge.challenger_completed_at %}
+    <div class="card" style="margin-bottom:16px;">
+      <p style="margin:0 0 12px;">You're mid-run. Finish all 10 questions to unlock the share link.</p>
+      <a class="btn btn-primary" href="/challenge/{{ challenge.id }}/play">Continue playing →</a>
+    </div>
+    {% endif %}
+
+    {% if role == 'challenger' and challenge.challenger_completed_at and challenge.status == 'active' %}
+    <div class="card" style="margin-bottom:16px;">
+      <p style="margin:0 0 8px;font-weight:800;">Waiting for <span class="lb-name">{{ challenge.opponent.username }}{% if challenge.opponent.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span></p>
+      <p class="text-muted text-sm" style="margin:0 0 12px;">Share this link:</p>
+      <input readonly value="{{ share_url }}" onclick="this.select()"
+        style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;">
+      <p class="text-muted text-sm" style="margin:12px 0 0;">Your score: <strong style="color:var(--cyan);">{{ '{:,}'.format(challenge.challenger_score or 0) }}</strong> pts · {{ acc_ch or 0 }}% · {{ challenge.challenger_time_ms or 0 }} ms</p>
+    </div>
+    {% endif %}
+
+    {% if role == 'opponent' and not challenge.challenger_completed_at %}
+    <div class="card">
+      <p style="margin:0;"><span class="lb-name">{{ challenge.challenger.username }}{% if challenge.challenger.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span> is still playing their run. Check back soon.</p>
+    </div>
+    {% elif role == 'opponent' and challenge.challenger_completed_at and not challenge.opponent_completed_at %}
+    <div class="card challenge-invite-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <span class="avatar" style="background:{{ challenge.challenger.avatar_colour }};">{{ challenge.challenger.username[0].upper() }}</span>
+        <div>
+          <div style="font-weight:900;"><span class="lb-name">{{ challenge.challenger.username }}{% if challenge.challenger.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span> challenged you</div>
+          <div class="text-muted text-sm">{{ challenge.category|title }} · 10 questions</div>
+        </div>
+      </div>
+      <div style="margin:12px 0;padding:12px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);">
+        <div class="text-muted text-sm" style="margin-bottom:4px;">Their score</div>
+        {% if hide_challenger_score %}
+        <div style="font-size:22px;font-weight:900;letter-spacing:0.2em;color:var(--muted);user-select:none;">•••••</div>
+        <p class="text-muted text-sm" style="margin:8px 0 0;">Finish your run to reveal how you compare.</p>
+        {% endif %}
+      </div>
+      {% if opponent_progress > 0 %}
+      <a class="btn btn-primary btn-lg" style="width:100%;display:inline-block;text-align:center;margin-top:16px;" href="/challenge/{{ challenge.id }}/play">Continue challenge →</a>
+      {% else %}
+      <form method="POST" action="/challenge/{{ challenge.id }}/accept" style="margin-top:16px;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Accept &amp; play →</button>
+      </form>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if role == 'challenger' and challenge.status == 'pending' and challenge.challenger_completed_at %}
+    {# should not happen #}
+    {% endif %}
+
+  <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+    <a class="btn btn-secondary" href="/challenges">All challenges</a>
+  </div>
+  {% endif %}
+</main>
+{% endblock %}

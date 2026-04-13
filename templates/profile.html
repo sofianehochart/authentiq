@@ -11,6 +11,16 @@
     </div>
   </div>
 
+  {% if tournament_badge %}
+  <div class="card" style="margin-bottom:24px;display:flex;align-items:center;gap:16px;padding:18px 20px;">
+    <div style="font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--cyan);min-width:52px;text-align:center;padding:12px 8px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);">TNT</div>
+    <div>
+      <p style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--violet-light);margin:0 0 4px;">Best tournament finish</p>
+      <p style="margin:0;font-size:16px;font-weight:800;">{{ tournament_badge.rank_label }} <span class="text-muted text-sm" style="font-weight:600;">· {{ tournament_badge.category_label }}</span></p>
+    </div>
+  </div>
+  {% endif %}
+
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;">
     <div class="card text-center">
       <div style="font-size:32px;font-weight:800;color:var(--cyan);">{{ streak }}</div>

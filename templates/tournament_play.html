@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Question {{ question_number }} — AuthentIQ{% endblock %}
+{% block title %}Tournament play — AuthentIQ{% endblock %}
 {% block content %}
 <main class="container" style="padding:40px 0 60px;">
   <div class="quiz-card">
+    <p class="text-muted text-sm" style="margin:0 0 8px;">Tournament · {{ category_label }}</p>
 
     <!-- Progress -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -13,8 +14,8 @@
       <div class="timer-bar" id="timer-bar"></div>
     </div>
 
-    <form id="answer-form" method="POST" action="/quiz/answer">
-      <input type="hidden" name="attempt_id" value="{{ attempt_id }}">
+    <form id="answer-form" method="POST" action="{{ url_for('tournament.answer_fallback', tournament_id=tournament.id) }}"
+          data-answer-url="{{ url_for('tournament.answer_json', tournament_id=tournament.id) }}">
       <input type="hidden" name="question_id" value="{{ question.id }}">
       <input type="hidden" name="answer" id="answer-input">
       <input type="hidden" name="response_time_ms" id="response-time-input">
@@ -34,6 +35,10 @@
                 {% if question.format == 'tweet' %}🐦 Tweet
                 {% elif question.format == 'instagram' %}📷 Instagram
                 {% elif question.format == 'audio' %}🎧 Audio
+                {% elif question.format == 'linkedin' %}💼 LinkedIn
+                {% elif question.format == 'reddit' %}👾 Reddit
+                {% elif question.format == 'news_quote' %}📰 Quote
+                {% else %}Post
                 {% endif %}
               </span>
             </div>
@@ -98,6 +103,19 @@
                     <audio id="audio-el" src="{{ question.audio_url }}"></audio>
                   {% endif %}
                 </div>
+              </div>
+            {% else %}
+              <div class="tweet-card">
+                <div class="tweet-header">
+                  <div class="sm-avatar" data-initials></div>
+                  <div class="tweet-meta">
+                    <div class="tweet-name-row">
+                      <div class="tweet-name" data-persona-name></div>
+                    </div>
+                    <div class="tweet-handle" data-handle-text></div>
+                  </div>
+                </div>
+                <div class="tweet-content">{{ question.content }}</div>
               </div>
             {% endif %}
 

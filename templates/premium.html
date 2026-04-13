@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Premium — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 72px;max-width:920px;">
+  <div style="text-align:center;margin-bottom:36px;">
+    <p style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--violet-light);margin:0 0 10px;">AuthentIQ Premium</p>
+    <h1 style="margin:0 0 10px;font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:-0.03em;line-height:1.1;">Train smarter with deeper drills &amp; richer stats</h1>
+    <p class="text-muted text-sm" style="margin:0 auto;max-width:560px;line-height:1.65;">Free tier keeps you sharp daily. Premium unlocks competitive play, category depth, and the analytics that actually change how you practice.</p>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden;border-color:rgba(124,58,237,0.35);">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+      <div style="padding:22px 20px;border-right:1px solid var(--border);background:rgba(255,255,255,0.02);">
+        <div style="font-weight:900;font-size:15px;margin-bottom:4px;">Free</div>
+        <div class="text-muted text-sm" style="margin-bottom:16px;">Great for daily practice</div>
+        <ul class="premium-compare-list">
+          <li>Daily mixed 10 questions</li>
+          <li>Global leaderboard</li>
+          <li>Basic stats</li>
+        </ul>
+      </div>
+      <div style="padding:22px 20px;background:linear-gradient(145deg, rgba(124,58,237,0.14), rgba(14,165,233,0.08));">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span class="premium-crown premium-crown--lg" aria-hidden="true"></span>
+          <div style="font-weight:900;font-size:15px;">Premium</div>
+        </div>
+        <div class="text-muted text-sm" style="margin-bottom:16px;">Everything in Free, plus:</div>
+        <ul class="premium-compare-list premium-compare-list--premium">
+          <li>Unlimited category drilling</li>
+          <li>Category leaderboards</li>
+          <li>Detailed format &amp; category accuracy breakdown</li>
+          <li>Head-to-head challenges</li>
+          <li>Weekly tournaments</li>
+          <li>Tournament badges on your profile</li>
+          <li>Audio round access</li>
+        </ul>
+      </div>
+    </div>
+    <div style="padding:20px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;">
+      <p class="text-muted text-sm" style="margin:0;max-width:520px;line-height:1.55;">Class demo: no payment flow yet. Use the button to flip Premium on for your account instantly.</p>
+      <form method="post" action="{{ url_for('premium.activate_demo') }}" style="margin:0;">
+        <input type="hidden" name="next" value="{{ request.args.get('next', '') or url_for('quiz.home') }}">
+        <button type="submit" class="btn btn-primary btn-lg">Go Premium (demo)</button>
+      </form>
+    </div>
+  </div>
+
+  <p class="text-muted text-sm" style="margin:20px 0 0;text-align:center;">Already Premium? You’re all set — this page is still handy for sharing what’s included.</p>
+</main>
+{% endblock %}

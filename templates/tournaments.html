@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Tournaments — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;max-width:720px;">
+  <h1 style="margin:0 0 8px;font-size:28px;font-weight:900;letter-spacing:-0.03em;">Weekly tournament</h1>
+  <p class="text-muted text-sm" style="margin:0 0 28px;line-height:1.5;">One category per ISO week. Premium members play 10 questions once per week; everyone can follow the leaderboard.</p>
+
+  {% if active %}
+  <div class="card" style="margin-bottom:20px;">
+    <p style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--violet-light);margin:0 0 10px;">This week</p>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
+      <div>
+        <h2 style="margin:0;font-size:20px;font-weight:800;">{{ category_label }}</h2>
+        <p class="text-muted text-sm" style="margin:6px 0 0;">{{ week_start.strftime('%d %b') }} – {{ week_end.strftime('%d %b %Y') }} · ISO week {{ iso_week }}</p>
+      </div>
+      {% if countdown_end_iso %}
+      <div class="text-center" style="min-width:140px;">
+        <div class="text-muted text-sm" style="margin-bottom:4px;">Ends in</div>
+        <div id="tournament-countdown" style="font-size:22px;font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums;">—</div>
+      </div>
+      {% endif %}
+    </div>
+    <div style="margin-top:20px;">
+      <a class="btn btn-primary" href="{{ url_for('tournament.play', tournament_id=active.id) }}">Play tournament</a>
+      <span class="text-muted text-sm" style="margin-left:12px;">10 questions · one entry per week</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <p style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);margin:0 0 14px;">Leaderboard · top 10</p>
+    {% if leaderboard_rows %}
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <thead>
+          <tr class="text-muted text-sm" style="text-align:left;border-bottom:1px solid var(--border);">
+            <th style="padding:8px 6px;width:40px;">#</th>
+            <th style="padding:8px 6px;">Player</th>
+            <th style="padding:8px 6px;text-align:right;">Score</th>
+            <th style="padding:8px 6px;text-align:right;">Accuracy</th>
+            <th style="padding:8px 6px;text-align:right;">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rank, entry in leaderboard_rows %}
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 6px;font-weight:800;">{{ rank }}</td>
+            <td style="padding:10px 6px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="avatar" style="background:{{ entry.user.avatar_colour }};width:30px;height:30px;font-size:12px;">{{ entry.user.username[0].upper() }}</span>
+                <span class="lb-name" style="font-weight:600;">{{ entry.user.username }}{% if entry.user.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span>
+              </div>
+            </td>
+            <td style="padding:10px 6px;text-align:right;font-weight:700;">{{ '{:,}'.format(entry.score) }}</td>
+            <td style="padding:10px 6px;text-align:right;">{% if entry.accuracy is not none %}{{ '%.1f'|format(entry.accuracy) }}%{% else %}—{% endif %}</td>
+            <td class="text-muted" style="padding:10px 6px;text-align:right;">{{ format_duration_ms(entry.time_ms) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted text-sm" style="margin:0;">No completed runs yet this week. Be the first.</p>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card" style="margin-bottom:20px;">
+    <p class="text-muted text-sm" style="margin:0;">No active tournament right now — we need more approved questions in the rotation. Check back soon.</p>
+  </div>
+  {% endif %}
+
+  <div class="card" style="margin-bottom:20px;">
+    <p style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--violet-light);margin:0 0 10px;">Upcoming</p>
+    <p style="margin:0;font-weight:700;">{{ upcoming.category_label }}</p>
+    <p class="text-muted text-sm" style="margin:6px 0 0;">{{ upcoming.week_start.strftime('%d %b') }} – {{ upcoming.week_end.strftime('%d %b %Y') }} · ISO week {{ upcoming.iso_week }}</p>
+  </div>
+
+  {% if past_winners %}
+  <div class="card">
+    <p style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--violet-light);margin:0 0 14px;">Past winners</p>
+    <ul style="list-style:none;padding:0;margin:0;">
+      {% for t, entry in past_winners %}
+      <li style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;">
+        <div>
+          <div class="text-muted text-sm">{{ t.week_start.strftime('%d %b %Y') }} · {{ (t.category|title) if t.category != 'mixed' else 'Mixed' }}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+            <span class="avatar" style="background:{{ entry.user.avatar_colour }};width:28px;height:28px;font-size:12px;">{{ entry.user.username[0].upper() }}</span>
+            <span class="lb-name" style="font-weight:700;">{{ entry.user.username }}{% if entry.user.is_premium %}<span class="premium-crown" title="Premium" aria-label="Premium"></span>{% endif %}</span>
+          </div>
+        </div>
+        <div style="text-align:right;font-size:13px;">
+          <div style="font-weight:800;color:var(--cyan);">{{ '{:,}'.format(entry.score) }} pts</div>
+          <div class="text-muted text-sm">{% if entry.accuracy is not none %}{{ '%.1f'|format(entry.accuracy) }}% · {% endif %}{{ format_duration_ms(entry.time_ms) }}</div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</main>
+{% if countdown_end_iso %}
+<script>
+(function() {
+  var el = document.getElementById('tournament-countdown');
+  if (!el) return;
+  var end = Date.parse('{{ countdown_end_iso }}');
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function tick() {
+    var now = Date.now();
+    var ms = Math.max(0, end - now);
+    var s = Math.floor(ms / 1000);
+    var d = Math.floor(s / 86400);
+    s %= 86400;
+    var h = Math.floor(s / 3600);
+    s %= 3600;
+    var m = Math.floor(s / 60);
+    s %= 60;
+    if (d > 0) {
+      el.textContent = d + 'd ' + pad(h) + ':' + pad(m) + ':' + pad(s);
+    } else {
+      el.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+{% endif %}
+{% endblock %}

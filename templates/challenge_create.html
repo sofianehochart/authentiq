@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Create challenge — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;max-width:520px;">
+  <h2 style="margin:0 0 8px;font-size:26px;font-weight:900;letter-spacing:-0.02em;">Challenge a friend</h2>
+  <p class="text-muted text-sm" style="margin:0 0 24px;">Premium · 10 questions · same deck for both players</p>
+
+  <div class="card">
+    <form method="POST">
+      <div style="margin-bottom:16px;">
+        <label class="text-muted text-sm" style="display:block;margin-bottom:6px;font-weight:700;">Category</label>
+        <select name="category" class="form-select" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:15px;">
+          {% for c in categories %}
+          <option value="{{ c }}">{{ c|title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label class="text-muted text-sm" style="display:block;margin-bottom:6px;font-weight:700;">Friend's username</label>
+        <input type="text" name="opponent_username" required placeholder="exact username"
+          style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:15px;">
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Start your run →</button>
+    </form>
+  </div>
+  <p class="text-muted text-sm" style="margin-top:16px;">After you finish all 10 questions, you'll get a link to share with your friend.</p>
+</main>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Tournament result — AuthentIQ{% endblock %}
+{% block content %}
+<main class="container" style="padding:40px 0 60px;max-width:520px;">
+  <div class="card" style="padding:28px 24px;">
+    <p class="text-muted text-sm" style="margin:0 0 6px;">Tournament complete</p>
+    <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;">{{ category_label }}</h1>
+    <p class="text-muted text-sm" style="margin:0 0 24px;">{{ tournament.week_start.strftime('%d %b') }} – {{ tournament.week_end.strftime('%d %b %Y') }}</p>
+
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px;">
+      <div class="card text-center" style="padding:16px;margin:0;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--violet-light);">Rank</div>
+        <div style="font-size:32px;font-weight:900;color:var(--cyan);margin-top:6px;">{{ rank_label }}</div>
+      </div>
+      <div class="card text-center" style="padding:16px;margin:0;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--violet-light);">Score</div>
+        <div style="font-size:32px;font-weight:900;color:var(--cyan);margin-top:6px;">{{ '{:,}'.format(entry.score) }}</div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+      <span class="text-muted text-sm">Accuracy</span>
+      <span style="font-weight:700;">{% if entry.accuracy is not none %}{{ '%.1f'|format(entry.accuracy) }}%{% else %}—{% endif %}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <span class="text-muted text-sm">Completion time</span>
+      <span style="font-weight:700;">{{ format_duration_ms(entry.time_ms) }}</span>
+    </div>
+
+    <div style="margin-top:24px;display:flex;flex-wrap:wrap;gap:10px;">
+      <a class="btn btn-primary" href="{{ url_for('tournament.hub') }}">Tournament hub</a>
+    </div>
+  </div>
+</main>
+{% endblock %}
