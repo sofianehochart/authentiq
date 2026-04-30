@@ -3,7 +3,7 @@ services:
     name: authentiq
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: flask --app app:create_app db upgrade && gunicorn "app:create_app()"
+    startCommand: flask --app app:create_app db upgrade && flask --app app:create_app seed-demo-users && gunicorn "app:create_app()"
     envVars:
       - key: SECRET_KEY
         generateValue: true
