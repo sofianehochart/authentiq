@@ -76,12 +76,23 @@ def create_app(test_config=None):
         return redirect(url_for("challenge.challenges_list"))
 
     with app.app_context():
+        try:
+            db.create_all()
+        except Exception:
+            db.session.rollback()
         _seed_questions_if_empty()
         try:
             from utils.tournament import sync_weekly_tournaments
 
             sync_weekly_tournaments()
             db.session.commit()
+        except Exception:
+            db.session.rollback()
+        try:
+            from utils.seed_demo_users import seed_demo_users
+            from models import User
+            if User.query.count() < 5:
+                seed_demo_users()
         except Exception:
             db.session.rollback()
 
