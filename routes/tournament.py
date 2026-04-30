@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 
 from extensions import db
 from models import Question, Tournament, TournamentAnswer, TournamentEntry
+from utils.explanations import explanation_for
 from utils.scoring import calculate_points
 from utils.tournament import (
     TOTAL_Q,
@@ -255,7 +256,7 @@ def answer_json(tournament_id):
     db.session.commit()
 
     correct_answer = "real" if question.is_real else "ai"
-    explanation = (question.explanation or "").strip() or "No explanation available for this question yet."
+    explanation = explanation_for(question)
     if finished:
         next_url = url_for("tournament.play", tournament_id=t.id)
     else:

@@ -21,7 +21,11 @@
       {% endif %}
     </div>
     <div style="margin-top:20px;">
+      {% if current_user.is_premium %}
       <a class="btn btn-primary" href="{{ url_for('tournament.play', tournament_id=active.id) }}">Play tournament</a>
+      {% else %}
+      <a class="btn btn-primary" href="{{ url_for('premium.premium_page', next=url_for('tournament.play', tournament_id=active.id)) }}">Go Premium to play →</a>
+      {% endif %}
       <span class="text-muted text-sm" style="margin-left:12px;">10 questions · one entry per week</span>
     </div>
   </div>

@@ -5,6 +5,7 @@ from sqlalchemy import func, case
 from extensions import db
 from models import Question, QuizAttempt, QuizAnswer, GameSession, QuestionResult
 from utils.daily import get_or_create_daily_set
+from utils.explanations import explanation_for
 from utils.scoring import calculate_points
 
 quiz_bp = Blueprint('quiz', __name__)
@@ -300,7 +301,7 @@ def answer_json():
     db.session.commit()
 
     correct_answer = 'real' if question.is_real else 'ai'
-    explanation = (question.explanation or "").strip() or "No explanation available for this question yet."
+    explanation = explanation_for(question)
     next_url = url_for('quiz.quiz') if attempt.completed_at is None else url_for('quiz.results', attempt_id=attempt.id)
 
     return jsonify({

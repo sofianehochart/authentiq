@@ -14,23 +14,15 @@ def get_or_create_daily_set():
         db.session.delete(existing)
         db.session.commit()
 
-    categories = ['celebrity', 'politics', 'sports', 'tech', 'viral']
-    selected_ids = []
-
-    for category in categories:
-        ai_q = (
-            Question.query.filter_by(category=category, is_real=False, is_approved=True)
-            .order_by(db.func.random()).first()
-        )
-        real_q = (
-            Question.query.filter_by(category=category, is_real=True, is_approved=True)
-            .order_by(db.func.random()).first()
-        )
-        if ai_q:
-            selected_ids.append(ai_q.id)
-        if real_q:
-            selected_ids.append(real_q.id)
-
+    ai_qs = (
+        Question.query.filter_by(is_real=False, is_approved=True)
+        .order_by(db.func.random()).limit(5).all()
+    )
+    real_qs = (
+        Question.query.filter_by(is_real=True, is_approved=True)
+        .order_by(db.func.random()).limit(5).all()
+    )
+    selected_ids = [q.id for q in ai_qs] + [q.id for q in real_qs]
     random.shuffle(selected_ids)
 
     daily_set = DailySet(date=today, question_ids=json.dumps(selected_ids))

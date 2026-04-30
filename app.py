@@ -53,6 +53,23 @@ def create_app(test_config=None):
         sync_weekly_tournaments()
         db.session.commit()
 
+    @app.cli.command("reseed-questions")
+    def reseed_questions_command():
+        """Wipe questions table and reload from data/questions.json."""
+        from models import Question, DailySet
+        DailySet.query.delete()
+        Question.query.delete()
+        db.session.commit()
+        _seed_questions_if_empty()
+        from models import Question as Q
+        print(f"Reseeded. Question count: {Q.query.count()}")
+
+    @app.cli.command("seed-demo-users")
+    def seed_demo_users_command():
+        """Create demo users with varied scores so leaderboard looks alive."""
+        from utils.seed_demo_users import seed_demo_users
+        seed_demo_users()
+
     @app.get("/challenges")
     @login_required
     def challenges_alias():
